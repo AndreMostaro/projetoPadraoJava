@@ -24,7 +24,7 @@ public class ModelControlller extends BaseController{
     @Autowired
     private ModelService modelService;
 
-    @GetMapping("/listarTodos")
+    @GetMapping("/listar-todos")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<List<Model>> listarTodos() throws DefaultExceptionHandler {
         List<Model> modelList = this.modelService.listarTodos();

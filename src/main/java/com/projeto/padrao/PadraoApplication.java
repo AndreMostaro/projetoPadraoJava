@@ -11,7 +11,8 @@ public class PadraoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PadraoApplication.class, args);
-        System.out.println("PROJETO PADRÃO");
+        System.out.println("André Mostaro - PROJETO PADRÃO");
+        System.out.println("Direitos reservados - 2022");
     }
 
     @Bean
