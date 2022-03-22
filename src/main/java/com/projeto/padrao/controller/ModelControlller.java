@@ -1,12 +1,14 @@
 package com.projeto.padrao.controller;
 
 import com.projeto.padrao.dto.ModelDTO;
+import com.projeto.padrao.dto.PageDTO;
 import com.projeto.padrao.exceptions.DefaultExceptionHandler;
 import com.projeto.padrao.model.Model;
 import com.projeto.padrao.repository.ModelRepository;
 import com.projeto.padrao.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -36,6 +38,15 @@ public class ModelControlller extends BaseController{
     public ResponseEntity<Model> listarPorId(@PathVariable(value = "id")Integer id) throws DefaultExceptionHandler {
         Model model = this.modelService.listarPorId(id);
         return ResponseEntity.ok(model);
+    }
+
+//    @RequestMapping(value = "/consultar-paginado", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping("/consultar-paginado")
+    public ResponseEntity<PageDTO<ModelDTO>> consultarPaginado(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                               @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                               @RequestBody(required = false) ModelDTO modelDTO) throws DefaultExceptionHandler {
+        PageDTO<ModelDTO> out = this.modelService.consultarPaginado(page, size, modelDTO);
+        return ResponseEntity.ok(out);
     }
 
     @PostMapping("/cadastrar")

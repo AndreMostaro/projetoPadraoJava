@@ -1,20 +1,27 @@
 package com.projeto.padrao.service;
 
 import com.projeto.padrao.dto.ModelDTO;
+import com.projeto.padrao.dto.PageDTO;
 import com.projeto.padrao.enums.EnumAtivoInativo;
 import com.projeto.padrao.exceptions.DefaultExceptionHandler;
 import com.projeto.padrao.model.Model;
 import com.projeto.padrao.repository.ModelRepository;
 import com.projeto.padrao.utils.CpfCnpjUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ModelService extends BaseService {
@@ -49,6 +56,43 @@ public class ModelService extends BaseService {
         } catch (Exception e) {
             throw new DefaultExceptionHandler(HttpStatus.BAD_REQUEST.value(), "Operação inválida! Erro leitura model.");
         }
+    }
+
+    public PageDTO<ModelDTO> consultarPaginado(int page, int size, ModelDTO request) throws DefaultExceptionHandler {
+        try {
+            PageRequest pageable = PageRequest.of(
+                    page,
+                    size,
+                    Sort.Direction.ASC, "nome");
+
+            Page<Model> pages;
+            if (!org.apache.commons.lang3.ObjectUtils.isEmpty(request)) {
+                pages = this.modelRepository.findAll(Example.of(super.convertToModel(request, Model.class)), pageable);
+            } else {
+                pages = this.modelRepository.findAll(pageable);
+            }
+            if (!pages.isEmpty()) {
+                final long totalElements = pages.getTotalElements();
+                final int totalPages = pages.getTotalPages();
+                final boolean isFirst = pages.isFirst();
+                final boolean isLast = pages.isLast();
+
+                List<ModelDTO> out = pages.stream()
+                        .map(entity -> super.convertToDTO(entity, ModelDTO.class)).collect(Collectors.toList());
+
+                PageDTO<ModelDTO> pageDTO = new PageDTO<ModelDTO>();
+                pageDTO.setTotalElements(BigDecimal.valueOf(totalElements));
+                pageDTO.setTotalPages(BigDecimal.valueOf(totalPages));
+                pageDTO.setFirst(isFirst);
+                pageDTO.setLast(isLast);
+                pageDTO.setContent(out);
+
+                return pageDTO;
+            }
+        } catch (Exception e) {
+            throw new DefaultExceptionHandler(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
+        }
+        return null;
     }
 
     @Transactional(rollbackFor = DefaultExceptionHandler.class)
