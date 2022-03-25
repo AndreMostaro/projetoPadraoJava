@@ -8,7 +8,6 @@ import com.projeto.padrao.repository.ModelRepository;
 import com.projeto.padrao.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,6 +16,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/models")
 public class ModelControlller extends BaseController{
@@ -57,6 +57,7 @@ public class ModelControlller extends BaseController{
         return ResponseEntity.created(location).body(super.convertTo(model, ModelDTO.class));
     }
 
+    // TODO - analisar a possibilidade de mandar ID via url ou deixar como está (visão de login)
     @PutMapping("/atualizar")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<ModelDTO> atualizar(@Valid @RequestBody ModelDTO modelDTO) throws DefaultExceptionHandler {
